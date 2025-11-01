@@ -135,7 +135,12 @@ const scorePanel = (window.ScoreMeter && window.ScoreMeter('#scorePanel')) || {
 };
 
 function updateScorePanel(res) {
-  // Preferred single call (handles score, blocked, reasons)
+  // Provide a parity badge text; you can flip to boolean later if you want to hide it sometimes.
+  res.parity = (typeof res.parity === 'string' || res.parity === true) ? res.parity : 'SafeSend parity';
+
+  // If your worker later returns a structured breakdown, attach it as res.breakdown = [...]
+  // For now, the ScoreMeter will derive weights from reasons.
+
   scorePanel.setSummary(res);
 
   const feats = res.feats || {};
@@ -145,6 +150,7 @@ function updateScorePanel(res) {
     <div>Age (days): <b>${feats.ageDays ?? '—'}</b></div>
     <div>Mixer taint: <b>${Math.round((feats.mixerTaint ?? 0)*100)}%</b></div>
     <div>Neighbors flagged: <b>${Math.round((feats.local?.riskyNeighborRatio ?? 0)*100)}%</b></div>
+    ${res.block ? `<div class="meta"><b>Policy:</b> Hard Block (listed address)</div>` : ''}
   `;
 }
 
