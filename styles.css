@@ -40,32 +40,45 @@ body{
 .panel-title{margin:0 0 10px;font-weight:700}
 .panel-row{display:flex;gap:8px;margin-top:10px}
 .meta{color:var(--muted);font-size:12px;line-height:1.5}
-#graphCanvas{width:100%;border-radius:12px;background:#08131a;border:1px solid #0f1d27}
 .foot{padding:14px;color:var(--muted);text-align:center;border-top:1px solid #0f1d27;margin-top:10px}
 
-/* === Halo & bands ======================================================= */
+/* === GRAPH CANVAS (SVG) ================================================== */
 
-.node {
-  position: relative;
+.graph-canvas, #graph{
+  position:relative;
+  width:100%;
+  height:520px;                 /* adjust to fit your card */
+  border-radius:12px;
+  background:#08131a;
+  border:1px solid #0f1d27;
+  overflow:hidden;
 }
 
-.halo::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 9999px;
-  pointer-events: none;
+/* SVG groups created by graph.js */
+.vision-graph .edge { stroke: rgba(255,255,255,0.08); stroke-width: 1; }
+.vision-graph .node-outer { fill:#0f172a; stroke:rgba(255,255,255,0.18); stroke-width:2; }
+.vision-graph .node-inner { fill: rgba(94,234,212,1); }
+.vision-graph .nodes g { cursor:pointer; }
+
+/* SVG-friendly halos: animate the OUTER circle stroke as a pulse */
+.vision-graph g.halo .node-outer {
+  stroke: rgba(34, 211, 178, 0.45);
+  animation: haloPulse 2s ease-out infinite;
+}
+.vision-graph g.halo.halo-red .node-outer {
+  stroke: rgba(239, 68, 68, 0.60);
+  animation: haloPulseRed 2s ease-out infinite;
 }
 
-.halo.halo-red::before {
-  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45);
-  animation: pulse-red 2s ease-out infinite;
+@keyframes haloPulse {
+  0%   { stroke-width:14; opacity:.45 }
+  70%  { stroke-width:2;  opacity:0 }
+  100% { stroke-width:2;  opacity:0 }
 }
-
-@keyframes pulse-red {
-  0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
-  70%  { box-shadow: 0 0 0 18px rgba(239, 68, 68, 0.00); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.00); }
+@keyframes haloPulseRed {
+  0%   { stroke-width:16; opacity:.55 }
+  70%  { stroke-width:2;  opacity:0 }
+  100% { stroke-width:2;  opacity:0 }
 }
 
 /* Optional score bands if you tint nodes */
@@ -73,22 +86,21 @@ body{
 .band-elevated { outline: 2px solid rgba(245, 158, 11, 0.35); }
 .band-moderate { outline: 2px solid rgba(16, 185, 129, 0.25); }
 
-/* === Score meter ======================================================== */
+/* === SCORE METER ========================================================= */
 
-.score-meter {
-  --ring-color: #10b981;
-}
+.score-panel { position:relative; }
+.score-panel .meter { position:relative; width:140px; height:140px; margin:8px 0; }
+.score-panel .ring  { position:absolute; inset:0; transform: rotate(-90deg); }
+.score-panel .track { stroke: rgba(255,255,255,0.07); }
+.score-panel .arc   { stroke: var(--ring-color, #10b981); }
+.score-panel .label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.score-panel .score-text { font-size:28px; font-weight:700; }
+.score-panel .score-sub  { opacity:.7; font-size:12px; }
+.score-panel .reasons    { margin-top:8px; font-size:12px; color:var(--muted); }
+.score-panel .reasons .reason { margin:2px 0; }
 
-.score-meter.blocked {
-  --ring-color: #ef4444; /* red */
-}
+.score-meter { --ring-color:#10b981; }
+.score-meter.blocked { --ring-color:#ef4444; } /* red */
 
-.score-meter .ring,
-.score-meter .arc {
-  stroke: var(--ring-color);
-}
-
-/* If your meter uses a circular div ring */
-.score-meter .ring-div {
-  box-shadow: 0 0 0 3px var(--ring-color) inset;
-}
+/* Back-compat for any div-ring variant */
+.score-meter .ring-div { box-shadow: 0 0 0 3px var(--ring-color) inset; }
